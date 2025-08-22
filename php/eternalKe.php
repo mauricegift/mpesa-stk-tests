@@ -39,37 +39,63 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($result['success']) {
         $checkoutRequestId = $result['CheckoutRequestID'];
         $merchantRequestId = $result['MerchantRequestID'];
+        // insert txn to db
+        $stmt = $pdo->prepare("INSERT INTO deposits (user_id, phone_number, amount, mpesa_code, checkout_request_id, merchant_request_id, status) VALUES (?, ?, ?, ?, ?, ?, ?)");
+        $stmt->execute([$user_id, $phone_number, $amount, "PENDING", $checkoutRequestId, $merchantRequestId, "pending"]);
+        $transaction_id = $pdo->lastInsertId();
         
-        sleep(10);
+        // polling txn status
+        $max_attempts = 60; // 1 min max check
+        $attempt = 0;
+        $transaction_status = "pending";
+        $mpesa_code = "PENDING";
         
-        $verify_data = [
-            'checkoutRequestId' => $checkoutRequestId
-        ];
+        while ($attempt < $max_attempts && ($transaction_status === "pending" || $transaction_status === "processing")) {
+            sleep(1); // check txn status every second
+            
+            $verify_data = [
+                'checkoutRequestId' => $checkoutRequestId
+            ];
+            
+            $ch = curl_init('https://mpesa-stk.giftedtech.co.ke/api/verify-transaction.php');
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($verify_data));
+            curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                'Content-Type: application/json'
+            ]);
+            
+            $verify_response = curl_exec($ch);
+            curl_close($ch);
+            
+            $verify_result = json_decode($verify_response, true);
+            
+            if ($verify_result['success']) {
+                $transaction_status = $verify_result['status'];
+                
+                if ($transaction_status === "completed") {
+                    $mpesa_code = isset($verify_result['data']['MpesaReceiptNumber']) 
+                        ? $verify_result['data']['MpesaReceiptNumber'] 
+                        : "COMPLETED";
+                    break;
+                } elseif ($transaction_status === "failed") {
+                    $mpesa_code = "FAILED";
+                    break;
+                }
+            }
+            
+            $attempt++;
+        }
+        // final txn update in db
+        $update_stmt = $pdo->prepare("UPDATE deposits SET mpesa_code = ?, status = ? WHERE id = ?");
+        $update_stmt->execute([$mpesa_code, $transaction_status, $transaction_id]);
         
-        $ch = curl_init('https://mpesa-stk.giftedtech.co.ke/api/verify-transaction.php');
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($verify_data));
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            'Content-Type: application/json'
-        ]);
-        
-        $verify_response = curl_exec($ch);
-        curl_close($ch);
-        
-        $verify_result = json_decode($verify_response, true);
-        
-        $mpesa_code = $verify_result['success'] && isset($verify_result['data']['MpesaReceiptNumber']) 
-            ? $verify_result['data']['MpesaReceiptNumber'] 
-            : "PENDING";
-        
-        $stmt = $pdo->prepare("INSERT INTO deposits (user_id, phone_number, amount, mpesa_code, checkout_request_id, merchant_request_id) VALUES (?, ?, ?, ?, ?, ?)");
-        $stmt->execute([$user_id, $phone_number, $amount, $mpesa_code, $checkoutRequestId, $merchantRequestId]);
-        
-        if ($verify_result['success'] && $verify_result['status'] === 'completed') {
+        if ($transaction_status === "completed") {
             echo "Payment successful! M-Pesa Code: $mpesa_code";
+        } elseif ($transaction_status === "failed") {
+            echo "Payment failed. Please try again.";
         } else {
-            echo "STK push sent! Please complete the payment on your phone.";
+            echo "Payment is taking longer than expected. We'll notify you once processed.";
         }
     } else {
         echo "Failed to send STK push: " . $result['message'];
@@ -139,9 +165,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </style>
 </head>
 <body>
-
+    <div class="container">
         <hr>
-        <h2>ðŸ“¥Deposit</h2>
+        <h2>💰 Deposit</h2>
      
         <form method="POST">
             <div class="mb-3">
@@ -153,22 +179,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <input type="number" class="form-control" name="amount" id="amount" placeholder="e.g. 1000">
             </div>
             
-            <button type="Deposit" class="btn Deposit-btn w-100"><i class="fas fa-paper-plane"></i> Deposit</button>
+            <button type="submit" class="btn deposit-btn w-100"><i class="fas fa-paper-plane"></i> Deposit</button>
         </form>
     </div>
-</div>
 
-  <h3>Recharge Instructions</h3>
-<div class="instruction-box">
-  <ol>
-    <li>The minimum recharge amount is 400 KSH. If the amount is less than the minimum, it will not be deposited.</li>
-    <li>Please verify the account information carefully when transferring funds to avoid payment errors.</li>
-    <li>Please comply with the recharge rules. If you do not recharge according to the platform rules.</li>
-    <li>After a successful transfer, please wait for 20 to 30 minutes. If the payment does not arrive for a long time, please contact online customer service.</li>
-  </ol>
-</div>
+    <h3>Recharge Instructions</h3>
+    <div class="instruction-box">
+        <ol>
+            <li>The minimum recharge amount is 400 KSH. If the amount is less than the minimum, it will not be deposited.</li>
+            <li>Please verify the account information carefully when transferring funds to avoid payment errors.</li>
+            <li>Please comply with the recharge rules. If you do not recharge according to the platform rules.</li>
+            <li>After a successful transfer, please wait for 20 to 30 minutes. If the payment does not arrive for a long time, please contact online customer service.</li>
+        </ol>
+    </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
