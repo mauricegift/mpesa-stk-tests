@@ -326,16 +326,13 @@
     </footer>
 
     <script>
-        // API base URL - update this to match your backend URL
-        const API_BASE_URL = window.location.origin;
+        const API_BASE_URL = "https://mpesa-stk.giftedtech.co.ke";
         
-        // Store transaction details
         let currentTransaction = {
             checkoutRequestId: null,
             transactionId: null
         };
         
-        // Show notification function
         function showNotification(message, type) {
             const notification = document.getElementById('notification');
             notification.textContent = message;
@@ -346,7 +343,6 @@
             }, 3000);
         }
         
-        // Initiate payment function - UPDATED TO USE REAL API
         async function initiatePayment() {
             const phone = document.getElementById('phone').value;
             const amount = document.getElementById('amount').value;
@@ -368,7 +364,6 @@
             initiateBtn.disabled = true;
             
             try {
-                // Make API call to your backend
                 const response = await fetch(`${API_BASE_URL}/api/payVirusiMbaya.php`, {
                     method: 'POST',
                     headers: {
@@ -385,19 +380,15 @@
                 if (data.success) {
                     showNotification('STK Push sent successfully! Check your phone', 'success');
                     
-                    // Update transaction details
                     currentTransaction.checkoutRequestId = data.CheckoutRequestID;
                     
                     document.getElementById('checkoutId').textContent = data.CheckoutRequestID;
                     document.getElementById('checkoutRequestId').value = data.CheckoutRequestID;
                     
-                    // Show transaction section
                     document.getElementById('transactionSection').style.display = 'block';
                     
-                    // Scroll to transaction section
                     document.getElementById('transactionSection').scrollIntoView({ behavior: 'smooth' });
-                    
-                    // Start polling for transaction status
+   
                     pollTransactionStatus(data.CheckoutRequestID);
                 } else {
                     showNotification('Failed to send STK Push: ' + (data.error || 'Unknown error'), 'error');
@@ -412,7 +403,6 @@
             }
         }
         
-        // Verify transaction function - UPDATED TO USE REAL API
         async function verifyTransaction() {
             const checkoutRequestId = document.getElementById('checkoutRequestId').value;
             
@@ -429,7 +419,6 @@
             verifyBtn.disabled = true;
             
             try {
-                // Make API call to your backend
                 const response = await fetch(`${API_BASE_URL}/api/verify-transaction.php`, {
                     method: 'POST',
                     headers: {
@@ -442,12 +431,10 @@
                 
                 const data = await response.json();
                 
-                // Update status badge
                 const statusBadge = document.getElementById('statusBadge');
                 statusBadge.textContent = data.status.charAt(0).toUpperCase() + data.status.slice(1);
                 statusBadge.className = 'status-badge status-' + data.status;
                 
-                // Display response
                 responseBox.textContent = JSON.stringify(data, null, 2);
                 
                 if (data.success) {
@@ -467,7 +454,6 @@
             }
         }
         
-        // Poll transaction status function
         async function pollTransactionStatus(checkoutRequestId) {
             let attempts = 0;
             const maxAttempts = 300; // Try for 5 minutes (30 attempts * 10 seconds)
@@ -494,15 +480,12 @@
                     
                     const data = await response.json();
                     
-                    // Update status badge
                     const statusBadge = document.getElementById('statusBadge');
                     statusBadge.textContent = data.status.charAt(0).toUpperCase() + data.status.slice(1);
                     statusBadge.className = 'status-badge status-' + data.status;
-                    
-                    // Update response box
+           
                     document.getElementById('responseBox').textContent = JSON.stringify(data, null, 2);
                     
-                    // Stop polling if transaction is completed or failed
                     if (data.status === 'completed' || data.status === 'failed') {
                         clearInterval(pollInterval);
                         
@@ -518,7 +501,6 @@
             }, 5000); // Poll every 1 second
         }
         
-        // Initialize the form with example values for testing
         document.getElementById('phone').value = '2547xxxxxxxx';
         document.getElementById('amount').value = '1';
     </script>
