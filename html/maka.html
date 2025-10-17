@@ -254,7 +254,7 @@
 <body>
     <div class="container">
         <header>
-            <h1><i class="fas fa-money-bill-wave"></i> Pay LAN Wireless</h1>
+            <h1><i class="fas fa-money-bill-wave"></i> Maka Mpesa Pay</h1>
             <p>Enter your M-Pesa Number and amount to make payment online</p>
         </header>
         
@@ -364,7 +364,7 @@
             initiateBtn.disabled = true;
             
             try {
-                const response = await fetch(`${API_BASE_URL}/api/payNeimah.php`, {
+                const response = await fetch(`${API_BASE_URL}/api/payMaka.php`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
