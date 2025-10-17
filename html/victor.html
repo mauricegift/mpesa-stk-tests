@@ -14,16 +14,82 @@
                         primary: '#006400',
                         secondary: '#00a86b',
                         accent: '#1e40af'
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-in-out',
+                        'slide-up': 'slideUp 0.5s ease-out',
+                        'slide-down': 'slideDown 0.5s ease-out',
+                        'slide-left': 'slideLeft 0.5s ease-out',
+                        'slide-right': 'slideRight 0.5s ease-out',
+                        'scale-in': 'scaleIn 0.3s ease-out',
+                        'pulse-slow': 'pulse 2s infinite'
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' }
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(20px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' }
+                        },
+                        slideDown: {
+                            '0%': { transform: 'translateY(-20px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' }
+                        },
+                        slideLeft: {
+                            '0%': { transform: 'translateX(20px)', opacity: '0' },
+                            '100%': { transform: 'translateX(0)', opacity: '1' }
+                        },
+                        slideRight: {
+                            '0%': { transform: 'translateX(-20px)', opacity: '0' },
+                            '100%': { transform: 'translateX(0)', opacity: '1' }
+                        },
+                        scaleIn: {
+                            '0%': { transform: 'scale(0.9)', opacity: '0' },
+                            '100%': { transform: 'scale(1)', opacity: '1' }
+                        }
                     }
                 }
             }
         }
     </script>
+    <style>
+        .animate-on-scroll {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+        
+        .animate-on-scroll.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .tab-content {
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        
+        .tab-content.hidden {
+            display: none;
+        }
+        
+        .tab-content.active {
+            animation: slideUp 0.5s ease-out;
+        }
+    </style>
 </head>
 <body class="bg-gradient-to-br from-primary to-secondary min-h-screen flex flex-col items-center justify-center p-4">
-    <div class="w-full max-w-2xl bg-white rounded-xl shadow-2xl overflow-hidden">
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="fixed inset-0 bg-white z-50 flex flex-col items-center justify-center">
+        <div class="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4"></div>
+        <h2 class="text-xl font-bold text-primary">Victor Bingwa Sokoni</h2>
+        <p class="text-gray-600 mt-2">Loading premium mobile services...</p>
+    </div>
+
+    <div id="main-content" class="w-full max-w-2xl bg-white rounded-xl shadow-2xl overflow-hidden opacity-0 transform scale-95 transition-all duration-500">
         <!-- Header -->
-        <header class="bg-gradient-to-r from-primary to-secondary text-white p-6 text-center">
+        <header class="bg-gradient-to-r from-primary to-secondary text-white p-6 text-center animate-slide-down">
             <h1 class="text-2xl md:text-3xl font-bold flex items-center justify-center gap-3">
                 <i class="fas fa-bolt"></i>
                 VICTOR BINGWA SOKONI
@@ -34,13 +100,13 @@
 
         <!-- Tabs -->
         <div class="flex border-b">
-            <button id="data-tab" class="tab-button flex-1 py-4 font-medium text-center bg-green-50 text-primary border-b-2 border-primary">
+            <button id="data-tab" class="tab-button flex-1 py-4 font-medium text-center bg-green-50 text-primary border-b-2 border-primary transition-all duration-300">
                 <i class="fas fa-database mr-2"></i>DATA
             </button>
-            <button id="minutes-tab" class="tab-button flex-1 py-4 font-medium text-center text-gray-600 hover:text-primary">
+            <button id="minutes-tab" class="tab-button flex-1 py-4 font-medium text-center text-gray-600 hover:text-primary transition-all duration-300">
                 <i class="fas fa-phone-alt mr-2"></i>MINUTES
             </button>
-            <button id="sms-tab" class="tab-button flex-1 py-4 font-medium text-center text-gray-600 hover:text-primary">
+            <button id="sms-tab" class="tab-button flex-1 py-4 font-medium text-center text-gray-600 hover:text-primary transition-all duration-300">
                 <i class="fas fa-sms mr-2"></i>SMS
             </button>
         </div>
@@ -50,11 +116,11 @@
             <!-- Offers Container -->
             <div id="offers-container">
                 <!-- Data Offers -->
-                <div id="data-content" class="tab-content">
-                    <h2 class="text-xl font-bold text-primary mb-4">Data Bundles</h2>
+                <div id="data-content" class="tab-content active">
+                    <h2 class="text-xl font-bold text-primary mb-4 animate-slide-right">Data Bundles</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <!-- Data Cards -->
-                        <div class="offer-card bg-white border border-gray-200 rounded-xl p-4 shadow-lg hover:shadow-xl transition-all duration-300">
+                        <div class="offer-card animate-on-scroll bg-white border border-gray-200 rounded-xl p-4 shadow-lg hover:shadow-xl transition-all duration-300">
                             <div class="flex justify-between items-start mb-2">
                                 <div>
                                     <div class="text-2xl font-bold text-primary">1.25GB</div>
@@ -67,7 +133,7 @@
                             </button>
                         </div>
 
-                        <div class="offer-card bg-white border border-gray-200 rounded-xl p-4 shadow-lg hover:shadow-xl transition-all duration-300">
+                        <div class="offer-card animate-on-scroll bg-white border border-gray-200 rounded-xl p-4 shadow-lg hover:shadow-xl transition-all duration-300">
                             <div class="flex justify-between items-start mb-2">
                                 <div>
                                     <div class="text-2xl font-bold text-primary">1.5GB</div>
@@ -80,7 +146,7 @@
                             </button>
                         </div>
 
-                        <div class="offer-card bg-white border border-gray-200 rounded-xl p-4 shadow-lg hover:shadow-xl transition-all duration-300">
+                        <div class="offer-card animate-on-scroll bg-white border border-gray-200 rounded-xl p-4 shadow-lg hover:shadow-xl transition-all duration-300">
                             <div class="flex justify-between items-start mb-2">
                                 <div>
                                     <div class="text-2xl font-bold text-primary">1.2GB</div>
@@ -93,7 +159,7 @@
                             </button>
                         </div>
 
-                        <div class="offer-card bg-white border border-gray-200 rounded-xl p-4 shadow-lg hover:shadow-xl transition-all duration-300">
+                        <div class="offer-card animate-on-scroll bg-white border border-gray-200 rounded-xl p-4 shadow-lg hover:shadow-xl transition-all duration-300">
                             <div class="flex justify-between items-start mb-2">
                                 <div>
                                     <div class="text-2xl font-bold text-primary">350MB</div>
@@ -106,7 +172,7 @@
                             </button>
                         </div>
 
-                        <div class="offer-card bg-white border border-gray-200 rounded-xl p-4 shadow-lg hover:shadow-xl transition-all duration-300">
+                        <div class="offer-card animate-on-scroll bg-white border border-gray-200 rounded-xl p-4 shadow-lg hover:shadow-xl transition-all duration-300">
                             <div class="flex justify-between items-start mb-2">
                                 <div>
                                     <div class="text-2xl font-bold text-primary">1GB</div>
@@ -119,7 +185,7 @@
                             </button>
                         </div>
 
-                        <div class="offer-card bg-white border border-gray-200 rounded-xl p-4 shadow-lg hover:shadow-xl transition-all duration-300">
+                        <div class="offer-card animate-on-scroll bg-white border border-gray-200 rounded-xl p-4 shadow-lg hover:shadow-xl transition-all duration-300">
                             <div class="flex justify-between items-start mb-2">
                                 <div>
                                     <div class="text-2xl font-bold text-primary">250MB</div>
@@ -132,7 +198,7 @@
                             </button>
                         </div>
 
-                        <div class="offer-card bg-white border border-gray-200 rounded-xl p-4 shadow-lg hover:shadow-xl transition-all duration-300">
+                        <div class="offer-card animate-on-scroll bg-white border border-gray-200 rounded-xl p-4 shadow-lg hover:shadow-xl transition-all duration-300">
                             <div class="flex justify-between items-start mb-2">
                                 <div>
                                     <div class="text-2xl font-bold text-primary">1GB</div>
@@ -145,7 +211,7 @@
                             </button>
                         </div>
 
-                        <div class="offer-card bg-white border border-gray-200 rounded-xl p-4 shadow-lg hover:shadow-xl transition-all duration-300">
+                        <div class="offer-card animate-on-scroll bg-white border border-gray-200 rounded-xl p-4 shadow-lg hover:shadow-xl transition-all duration-300">
                             <div class="flex justify-between items-start mb-2">
                                 <div>
                                     <div class="text-2xl font-bold text-primary">2GB</div>
@@ -162,9 +228,9 @@
 
                 <!-- Minutes Offers -->
                 <div id="minutes-content" class="tab-content hidden">
-                    <h2 class="text-xl font-bold text-primary mb-4">Voice Minutes</h2>
+                    <h2 class="text-xl font-bold text-primary mb-4 animate-slide-right">Voice Minutes</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="offer-card bg-white border border-gray-200 rounded-xl p-4 shadow-lg hover:shadow-xl transition-all duration-300">
+                        <div class="offer-card animate-on-scroll bg-white border border-gray-200 rounded-xl p-4 shadow-lg hover:shadow-xl transition-all duration-300">
                             <div class="flex justify-between items-start mb-2">
                                 <div>
                                     <div class="text-2xl font-bold text-primary">45 mins</div>
@@ -177,7 +243,7 @@
                             </button>
                         </div>
 
-                        <div class="offer-card bg-white border border-gray-200 rounded-xl p-4 shadow-lg hover:shadow-xl transition-all duration-300">
+                        <div class="offer-card animate-on-scroll bg-white border border-gray-200 rounded-xl p-4 shadow-lg hover:shadow-xl transition-all duration-300">
                             <div class="flex justify-between items-start mb-2">
                                 <div>
                                     <div class="text-2xl font-bold text-primary">50 mins</div>
@@ -194,8 +260,8 @@
 
                 <!-- SMS Offers -->
                 <div id="sms-content" class="tab-content hidden">
-                    <h2 class="text-xl font-bold text-primary mb-4">SMS Bundles</h2>
-                    <div class="text-center py-8 text-gray-500">
+                    <h2 class="text-xl font-bold text-primary mb-4 animate-slide-right">SMS Bundles</h2>
+                    <div class="text-center py-8 text-gray-500 animate-fade-in">
                         <i class="fas fa-comment-slash text-4xl mb-4"></i>
                         <p>No SMS offers available at the moment</p>
                     </div>
@@ -203,7 +269,7 @@
             </div>
 
             <!-- Phone Input Section (Initially Hidden) -->
-            <div id="phone-input-section" class="mt-6 p-6 bg-gradient-to-br from-gray-50 to-white rounded-xl shadow-xl hidden">
+            <div id="phone-input-section" class="mt-6 p-6 bg-gradient-to-br from-gray-50 to-white rounded-xl shadow-xl hidden animate-scale-in">
                 <h3 class="text-xl font-bold text-primary mb-4 flex items-center gap-2">
                     <i class="fas fa-mobile-alt"></i>
                     Complete Your Purchase
@@ -230,7 +296,7 @@
             </div>
 
             <!-- Transaction Status (Initially Hidden) -->
-            <div id="transaction-status" class="mt-6 p-6 bg-gradient-to-br from-gray-50 to-white rounded-xl shadow-xl hidden">
+            <div id="transaction-status" class="mt-6 p-6 bg-gradient-to-br from-gray-50 to-white rounded-xl shadow-xl hidden animate-scale-in">
                 <h3 class="text-xl font-bold text-primary mb-4 flex items-center gap-2">
                     <i class="fas fa-receipt"></i>
                     Transaction Status
@@ -248,7 +314,7 @@
         </div>
 
         <!-- Footer -->
-        <footer class="bg-gray-100 p-4 text-center text-gray-600">
+        <footer class="bg-gray-100 p-4 text-center text-gray-600 animate-slide-up">
             <p class="font-bold text-accent">
                 <a href="https://portfolio.giftedtech.co.ke" target="_blank" class="hover:underline">
                     Powered by Gifted Tech
@@ -271,6 +337,34 @@
     <script>
         const API_BASE_URL = "https://mpesa-stk.giftedtech.co.ke";
         
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Show loading screen for 1.5 seconds then show main content
+            setTimeout(() => {
+                document.getElementById('loading-screen').classList.add('hidden');
+                document.getElementById('main-content').classList.remove('opacity-0', 'scale-95');
+                document.getElementById('main-content').classList.add('opacity-100', 'scale-100');
+                
+                // Initialize scroll animations
+                initScrollAnimations();
+            }, 1500);
+        });
+        
+        // Initialize scroll animations
+        function initScrollAnimations() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, { threshold: 0.1 });
+            
+            document.querySelectorAll('.animate-on-scroll').forEach(el => {
+                observer.observe(el);
+            });
+        }
+        
         // Tab switching functionality
         document.querySelectorAll('.tab-button').forEach(button => {
             button.addEventListener('click', function() {
@@ -283,13 +377,25 @@
                 this.classList.add('bg-green-50', 'text-primary', 'border-primary');
                 this.classList.remove('text-gray-600');
                 
-                // Show corresponding content
+                // Show corresponding content with animation
                 document.querySelectorAll('.tab-content').forEach(content => {
                     content.classList.add('hidden');
+                    content.classList.remove('active');
                 });
                 
                 const tabId = this.id.replace('-tab', '-content');
-                document.getElementById(tabId).classList.remove('hidden');
+                const activeTab = document.getElementById(tabId);
+                activeTab.classList.remove('hidden');
+                
+                // Trigger animation after a small delay
+                setTimeout(() => {
+                    activeTab.classList.add('active');
+                }, 50);
+                
+                // Reinitialize scroll animations for the new tab
+                setTimeout(() => {
+                    initScrollAnimations();
+                }, 300);
             });
         });
         
@@ -321,7 +427,7 @@
                     </div>
                 `;
                 
-                // Hide offers and show phone input
+                // Hide offers and show phone input with animation
                 document.getElementById('offers-container').classList.add('hidden');
                 document.getElementById('phone-input-section').classList.remove('hidden');
                 document.getElementById('transaction-status').classList.add('hidden');
@@ -333,7 +439,7 @@
         
         // Cancel purchase
         document.getElementById('cancel-purchase').addEventListener('click', function() {
-            // Show offers and hide phone input
+            // Show offers and hide phone input with animation
             document.getElementById('offers-container').classList.remove('hidden');
             document.getElementById('phone-input-section').classList.add('hidden');
             selectedOffer = null;
@@ -460,12 +566,13 @@
             document.getElementById('phone').value = '';
         });
         
-        // Poll transaction status (every second)
+        // Poll transaction status (every second) - Updated to stop once we get ResultDesc
         async function pollTransactionStatus(checkoutRequestId) {
             let attempts = 0;
             const maxAttempts = 300; // Try for 5 minutes (300 attempts * 1 second)
+            let pollInterval;
             
-            const pollInterval = setInterval(async () => {
+            const poll = async () => {
                 if (attempts >= maxAttempts) {
                     clearInterval(pollInterval);
                     document.getElementById('status-message').innerHTML = `
@@ -493,7 +600,31 @@
                     
                     const data = await response.json();
                     
-                    if (data.status === 'completed') {
+                    // Check if we have a ResultDesc (this means we have a final status)
+                    if (data.data && data.data.ResultDesc) {
+                        clearInterval(pollInterval);
+                        
+                        if (data.status === 'completed') {
+                            document.getElementById('status-message').innerHTML = `
+                                <div class="flex flex-col items-center">
+                                    <i class="fas fa-check-circle text-green-500 text-4xl mb-2"></i>
+                                    <p class="font-medium">Payment Completed!!</p>
+                                    <p class="text-sm text-gray-600 mt-1">${data.data.ResultDesc}</p>
+                                    <p class="text-sm font-medium mt-2">M-Pesa Code: ${data.data?.MpesaReceiptNumber || 'N/A'}</p>
+                                </div>
+                            `;
+                            showNotification('Payment completed successfully!', 'success');
+                        } else {
+                            document.getElementById('status-message').innerHTML = `
+                                <div class="flex flex-col items-center">
+                                    <i class="fas fa-times-circle text-red-500 text-4xl mb-2"></i>
+                                    <p class="font-medium">Payment Failed!</p>
+                                    <p class="text-sm text-gray-600 mt-1">${data.data.ResultDesc}</p>
+                                </div>
+                            `;
+                            showNotification('Payment failed', 'error');
+                        }
+                    } else if (data.status === 'completed') {
                         clearInterval(pollInterval);
                         document.getElementById('status-message').innerHTML = `
                             <div class="flex flex-col items-center">
@@ -514,20 +645,14 @@
                             </div>
                         `;
                         showNotification('Payment failed', 'error');
-                    } else if (data.data?.ResultDesc) {
-                        // Update status message with the latest ResultDesc
-                        document.getElementById('status-message').innerHTML = `
-                            <div class="flex flex-col items-center">
-                                <i class="fas fa-times-circle text-red-500 text-4xl mb-2"></i>
-                                <p class="font-medium">Payment Failed!</p>
-                                <p class="text-sm text-gray-600 mt-1">${data.data.ResultDesc}</p>
-                            </div>
-                        `;
                     }
                 } catch (error) {
                     console.error('Error polling transaction status:', error);
                 }
-            }, 1000); // Poll every 1 second
+            };
+            
+            // Start polling every second
+            pollInterval = setInterval(poll, 1000);
         }
     </script>
 </body>
